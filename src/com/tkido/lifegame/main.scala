@@ -45,11 +45,17 @@ object main extends SimpleSwingApplication {
   def mainPanel = new Panel {
     preferredSize = new Dimension(800, 480)
     focusable = true
-    listenTo(keys)
+    listenTo(keys, this.mouse.moves)
+    
     reactions += {
       case KeyPressed(_, key, _, _) =>
         onKeyPress(key)
         repaint
+      case MouseEntered(source, point, modifiers) =>
+        Logger.info(source, point, modifiers)
+      case MouseDragged(source, point, modifiers) =>
+        Logger.info(source, point, modifiers)
+        
     }
     override def paint(g: Graphics2D) {
       g setColor bgColor
@@ -79,5 +85,5 @@ object main extends SimpleSwingApplication {
     def last: String = lastKey
   }
   
-  Logger.close()
+  //Logger.close()
 }
