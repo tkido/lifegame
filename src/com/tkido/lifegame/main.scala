@@ -11,28 +11,42 @@ object main extends SimpleSwingApplication {
   import com.tkido.tools.Logger
   
   import event.Key._
-  import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
+  import java.awt.{Dimension, Graphics2D, Graphics, Image, Point, Rectangle}
   import java.awt.{Color => AWTColor}
   
   Logger.level = Config.logLevel
   
-  
-  val fgColor = new AWTColor(48, 99, 99)
-  val bgColor = new AWTColor(0, 255, 0)
+  val fgColor = new AWTColor(0, 0, 0)
+  val bgColor = new AWTColor(255, 255, 255)
   
   val ui = new AbstractUI
+  val grid = Grid(colNum, rowNum)
   
   def onKeyPress(keyCode: Value) = keyCode match {
     case Left  => ui.left()
     case Right => ui.right()
     case Up    => ui.up()
     case Down  => ui.down()
-    case Space => ui.space()
+    case Space => grid.update //ui.space()
     case _ =>
   }
+
   def onPaint(g: Graphics2D) {
     g setColor fgColor
     g drawString (ui.last, 20, 20)
+  }
+  
+  def onDrag(point:Point, modifiers:Key.Modifiers) :Boolean = {
+    val to = modifiers match {
+          case 1024 => 10
+          case 4096 => 0
+    }
+    val x = point.x / cellWidth
+    val y = point.y / cellWidth
+    
+    val needToRepaint = (grid(x, y) != to)
+    grid(x, y) = to
+    return needToRepaint
   }
   
   def top = new MainFrame {
@@ -43,7 +57,7 @@ object main extends SimpleSwingApplication {
     contents = mainPanel
   }
   def mainPanel = new Panel {
-    preferredSize = new Dimension(800, 480)
+    preferredSize = new Dimension(cellWidth * colNum, cellHeight * rowNum)
     focusable = true
     listenTo(keys, this.mouse.moves)
     
@@ -51,15 +65,28 @@ object main extends SimpleSwingApplication {
       case KeyPressed(_, key, _, _) =>
         onKeyPress(key)
         repaint
-      case MouseEntered(source, point, modifiers) =>
-        Logger.info(source, point, modifiers)
       case MouseDragged(source, point, modifiers) =>
-        Logger.info(source, point, modifiers)
-        
+        //Logger.info(source, point, modifiers)
+        modifiers match {
+          case 1024 =>
+            //Logger.debug("Left")
+            if(onDrag(point, modifiers))
+              repaint
+          case 4096 =>
+            //Logger.debug("Right")
+            if(onDrag(point, modifiers))
+              repaint
+        }
     }
     override def paint(g: Graphics2D) {
       g setColor bgColor
       g fillRect (0, 0, size.width, size.height)
+      g setColor fgColor
+      
+      for((cell, v) <- grid.zipWithVector)
+        if (cell >= 10)
+          g.fillRect(v.x * cellWidth, v.y * cellHeight, cellWidth, cellHeight)
+      
       onPaint(g)
     }
   }
@@ -85,5 +112,4 @@ object main extends SimpleSwingApplication {
     def last: String = lastKey
   }
   
-  //Logger.close()
 }
