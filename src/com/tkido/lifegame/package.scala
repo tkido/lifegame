@@ -1,9 +1,9 @@
 package com.tkido
 
 package object lifegame {
-  val cellWidth = 10
-  val cellHeight = 10
-  val rowNum = 40
-  val colNum = 40
+  val cellWidth = 5
+  val cellHeight = 5
+  val rowNum = 160
+  val colNum = 160
   
 }

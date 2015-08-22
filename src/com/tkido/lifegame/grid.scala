@@ -87,20 +87,22 @@ class Grid(val width:Int, val height:Int, d:Int) {
   def update{
     for (j <- Range(0, height))
       for (i <- Range(0, width))
-        for(dy <- List(-1, 0, 1))
-          for(dx <- List(-1, 0, 1)){
-            val ay = j + dy match{
-              case -1 => height - 1
-              case `height` => 0
-              case _ => j + dy
+        if(arrays(j)(i) >= 10){
+          for(dy <- List(-1, 0, 1))
+            for(dx <- List(-1, 0, 1)){
+              val ay = j + dy match{
+                case -1 => height - 1
+                case `height` => 0
+                case _ => j + dy
+              }
+              val ax = i + dx match{
+                case -1 => width - 1
+                case `width` => 0
+                case _ => i + dx
+              }
+              arrays(ay)(ax) += 1
             }
-            val ax = i + dx match{
-              case -1 => width - 1
-              case `width` => 0
-              case _ => i + dx
-            }
-            arrays(j)(i) += arrays(ay)(ax) / 10
-          }
+        }
     for (j <- Range(0, height))
       for (i <- Range(0, width)){
         arrays(j)(i) = arrays(j)(i) match {
