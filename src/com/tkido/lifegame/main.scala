@@ -4,13 +4,13 @@ import java.awt.Cursor
 
 import scala.swing._
 import scala.swing.event._
+import scala.swing.event.Key._
 
 object main extends SimpleSwingApplication {
   import com.tkido.lifegame.Config
   import com.tkido.swing.ImageLoader
   import com.tkido.tools.Logger
   
-  import event.Key._
   import java.awt.{Dimension, Graphics2D, Graphics, Image, Point, Rectangle}
   import java.awt.{Color => AWTColor}
   
@@ -23,13 +23,13 @@ object main extends SimpleSwingApplication {
   val grid = Grid(colNum, rowNum)
   
   def onKeyPress(keyCode: Value) = keyCode match {
-    case Left  => ui.left()
-    case Right => ui.right()
-    case Up    => ui.up()
-    case Down  => ui.down()
-    case Space => grid.update //ui.space()
-    case R => grid.reset
-    case S => grid.shuffle
+    case Key.Left  => ui.left()
+    case Key.Right => ui.right()
+    case Key.Up    => ui.up()
+    case Key.Down  => ui.down()
+    case Key.Space => grid.update //ui.space()
+    case Key.R => grid.reset
+    case Key.S => grid.shuffle
     case _ =>
   }
 
@@ -54,12 +54,40 @@ object main extends SimpleSwingApplication {
     }
   }
   
-  def top = new MainFrame {
+  def top = new MainFrame { frame =>
     title = "ライフゲイム"
     cursor = new Cursor(Cursor.HAND_CURSOR)
     resizable = false
     iconImage = ImageLoader("favicon.bmp")
-    contents = mainPanel
+    val mp = mainPanel
+    contents = mp
+    menuBar = new MenuBar{
+      contents += new Menu("ファイル(F)") {
+        mnemonic = Key.F
+
+        contents += new MenuItem(Action("リセット(R)") {
+          grid.reset
+          mp.repaint
+        }) {
+          mnemonic = Key.N
+        }
+        contents += new MenuItem(Action("終了(X)") {
+          frame.dispose()
+        }) {
+          mnemonic = Key.X
+        }
+      }
+      contents += new Menu("編集(E)") {
+        mnemonic = Key.E
+
+        contents += new MenuItem(Action("シャッフル(S)") {
+          grid.shuffle
+          mp.repaint
+        }) {
+          mnemonic = Key.S
+        }
+      }
+    }
   }
   def mainPanel = new Panel {
     preferredSize = new Dimension(cellWidth * colNum, cellHeight * rowNum)
