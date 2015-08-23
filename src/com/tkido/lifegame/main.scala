@@ -1,13 +1,13 @@
 package com.tkido.lifegame
 
 import java.awt.Cursor
-import javax.imageio.ImageIO
 
 import scala.swing._
 import scala.swing.event._
 
 object main extends SimpleSwingApplication {
   import com.tkido.lifegame.Config
+  import com.tkido.swing.ImageLoader
   import com.tkido.tools.Logger
   
   import event.Key._
@@ -58,7 +58,7 @@ object main extends SimpleSwingApplication {
     title = "ライフゲイム"
     cursor = new Cursor(Cursor.HAND_CURSOR)
     resizable = false
-    //iconImage = ImageIO.read(getClass().getResourceAsStream("/resource/favicon.bmp"))
+    iconImage = ImageLoader("favicon.bmp")
     contents = mainPanel
   }
   def mainPanel = new Panel {
