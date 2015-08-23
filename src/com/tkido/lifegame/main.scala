@@ -21,6 +21,7 @@ object main extends SimpleSwingApplication {
   
   val ui = new AbstractUI
   val grid = Grid(colNum, rowNum)
+  val icon = ImageLoader("favicon.bmp")
   
   def onKeyPress(keyCode: Value) = keyCode match {
     case Key.Left  => ui.left()
@@ -113,7 +114,8 @@ object main extends SimpleSwingApplication {
       
       for((cell, v) <- grid.zipWithVector)
         if (cell >= 10)
-          g.fillRect(v.x * cellWidth, v.y * cellHeight, cellWidth, cellHeight)
+          g drawImage (icon, null, v.x * cellWidth, v.y * cellHeight)
+          //g.fillRect(v.x * cellWidth, v.y * cellHeight, cellWidth, cellHeight)
       
       onPaint(g)
     }
