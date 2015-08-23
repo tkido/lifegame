@@ -28,6 +28,8 @@ object main extends SimpleSwingApplication {
     case Up    => ui.up()
     case Down  => ui.down()
     case Space => grid.update //ui.space()
+    case R => grid.reset
+    case S => grid.shuffle
     case _ =>
   }
 
@@ -44,9 +46,12 @@ object main extends SimpleSwingApplication {
     val x = point.x / cellWidth
     val y = point.y / cellWidth
     
-    val needToRepaint = (grid(x, y) != to)
-    grid(x, y) = to
-    return needToRepaint
+    if(grid(x, y) == to){
+      return false
+    }else{
+      grid(x, y) = to
+      return true
+    }
   }
   
   def top = new MainFrame {
@@ -68,12 +73,7 @@ object main extends SimpleSwingApplication {
       case MouseDragged(source, point, modifiers) =>
         //Logger.info(source, point, modifiers)
         modifiers match {
-          case 1024 =>
-            //Logger.debug("Left")
-            if(onDrag(point, modifiers))
-              repaint
-          case 4096 =>
-            //Logger.debug("Right")
+          case 1024 | 4096 =>
             if(onDrag(point, modifiers))
               repaint
         }

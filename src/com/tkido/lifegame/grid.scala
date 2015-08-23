@@ -1,7 +1,8 @@
 package com.tkido.lifegame
 
 class Grid(val width:Int, val height:Int, d:Int) {
-  import scala.collection.immutable.SortedSet  
+  import scala.collection.immutable.SortedSet
+  import scala.util.Random
   
   private val arrays = Array.fill[Int](height, width)(d)
   
@@ -109,6 +110,21 @@ class Grid(val width:Int, val height:Int, d:Int) {
           case 3 | 13 | 14 => 10
           case _ => 0
         }
+      }
+  }
+  
+  def reset{
+    for (j <- Range(0, height))
+      for (i <- Range(0, width))
+        arrays(j)(i) = 0
+  }
+  
+  def shuffle{
+    val rand = new Random
+    for (j <- Range(0, height))
+      for (i <- Range(0, width)){
+        val to = if(rand.nextInt(100) < 30) 10 else 0
+        arrays(j)(i) = to //rand.nextInt(2) * 10
       }
   }
 }
