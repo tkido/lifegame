@@ -1,7 +1,8 @@
 package com.tkido.lifegame
 
 class Grid(val width:Int, val height:Int, d:Int) {
-  import scala.collection.immutable.SortedSet  
+  import scala.collection.immutable.SortedSet
+  import scala.util.Random
   
   private val arrays = Array.fill[Int](height, width)(d)
   
@@ -87,26 +88,43 @@ class Grid(val width:Int, val height:Int, d:Int) {
   def update{
     for (j <- Range(0, height))
       for (i <- Range(0, width))
-        for(dy <- List(-1, 0, 1))
-          for(dx <- List(-1, 0, 1)){
-            val ay = j + dy match{
-              case -1 => height - 1
-              case `height` => 0
-              case _ => j + dy
+        if(arrays(j)(i) >= 10){
+          for(dy <- List(-1, 0, 1))
+            for(dx <- List(-1, 0, 1)){
+              val ay = j + dy match{
+                case -1 => height - 1
+                case `height` => 0
+                case _ => j + dy
+              }
+              val ax = i + dx match{
+                case -1 => width - 1
+                case `width` => 0
+                case _ => i + dx
+              }
+              arrays(ay)(ax) += 1
             }
-            val ax = i + dx match{
-              case -1 => width - 1
-              case `width` => 0
-              case _ => i + dx
-            }
-            arrays(j)(i) += arrays(ay)(ax) / 10
-          }
+        }
     for (j <- Range(0, height))
       for (i <- Range(0, width)){
         arrays(j)(i) = arrays(j)(i) match {
           case 3 | 13 | 14 => 10
           case _ => 0
         }
+      }
+  }
+  
+  def reset{
+    for (j <- Range(0, height))
+      for (i <- Range(0, width))
+        arrays(j)(i) = 0
+  }
+  
+  def shuffle{
+    val rand = new Random
+    for (j <- Range(0, height))
+      for (i <- Range(0, width)){
+        val to = if(rand.nextInt(100) < 30) 10 else 0
+        arrays(j)(i) = to //rand.nextInt(2) * 10
       }
   }
 }
