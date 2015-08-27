@@ -8,7 +8,7 @@ import scala.swing.event.Key._
 import scala.util.Random
 import java.awt.geom.Ellipse2D
 
-
+import com.tkido.quadtree._
 
 object Bullet{
   val normalColor = new Color(0, 0, 255)

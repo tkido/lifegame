@@ -1,7 +1,31 @@
 package com.tkido
 
 package object quadtree {
-  class Cell
+  import scala.collection.mutable.Set
+  
+  trait Quadable{
+    var currentCellNum = 0
+    def updatePosition(x1:Double, y1:Double, x2:Double, y2:Double){
+      val upperLeft = getMortonNumber(x1 / 32, y1 / 32)
+      val lowerRight = getMortonNumber(x2 / 32, y2 / 32)
+      val newCellNum = getCellNumber(upperLeft, lowerRight)
+      if(currentCellNum != newCellNum){
+        cells(currentCellNum).remove(this)
+        cells(newCellNum).add(this)
+        currentCellNum = newCellNum
+      }
+    }
+  }
+  
+  class Cell(){
+    private val set = Set[Quadable]()
+    def add(elem:Quadable){
+      set.add(elem)
+    }
+    def remove(elem:Quadable){
+      set.remove(elem)
+    }
+  }
   
   def cells = Array.fill(1365)(new Cell)
   
@@ -30,4 +54,6 @@ package object quadtree {
     if(n == 0)                 return (lowerRight >>  0) + 341 //L5
     return 0
   }
+  
+  
 }
