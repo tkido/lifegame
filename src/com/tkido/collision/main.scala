@@ -52,19 +52,19 @@ class Bullet(val radius:Float, var x:Float, var y:Float, var dx:Float, var dy:Fl
     
     val x1 = x match {
       case x if x - radius < 0.0f => 0.0f
-      case x => x
+      case x => x - radius
     }
     val y1 = y match {
       case y if y - radius < 0.0f => 0.0f
-      case y => y
+      case y => y - radius
     }
     val x2 = x match {
       case x if x + radius >= fieldWidth => fieldWidth - 0.0001f
-      case x => x
+      case x => x + radius
     }
     val y2 = y match {
       case y if y + radius >= fieldHeight => fieldHeight - 0.0001f
-      case y => y
+      case y => y + radius
     }
     updatePosition(x1, y1, x2, y2)
     //Logger.debug(cellNum)
@@ -97,7 +97,7 @@ object main extends SimpleSwingApplication {
   
   val icon = ImageLoader("favicon.bmp")
   
-  val bullets = Range(0, 100).map(_ => new Bullet(Random.nextInt(15)+5, Random.nextFloat * fieldWidth, Random.nextFloat * fieldHeight, Random.nextFloat * 4 - 2, Random.nextFloat * 4 - 2, false))
+  val bullets = Range(0, 1000).map(_ => new Bullet(Random.nextInt(15)+5, Random.nextFloat * fieldWidth, Random.nextFloat * fieldHeight, Random.nextFloat * 4 - 2, Random.nextFloat * 4 - 2, false))
 
   
   def onKeyPress(keyCode: Value) = keyCode match {
@@ -141,13 +141,13 @@ object main extends SimpleSwingApplication {
     def space() {
       for(bullet <- bullets)
         bullet.update
-      quadtree.check(0)
+      quadtree.checkCell(0)
       
       //for(bullet <- bullets)
       //  for(other <- bullets)
       //    bullet.check(other)
       
-      Logger.debug("チェック回数：" + Bullet.count)
+      //Logger.debug("チェック回数：" + Bullet.count)
     }
   }
     

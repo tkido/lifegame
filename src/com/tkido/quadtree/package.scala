@@ -14,14 +14,15 @@ package object quadtree {
     var y:Float
     val radius:Float
     
-    var cellNum = 0
+    var cellNum = -1
     
     def updatePosition(x1:Float, y1:Float, x2:Float, y2:Float){
       val upperLeft = getMortonNumber(x1 / 32, y1 / 32)
       val lowerRight = getMortonNumber(x2 / 32, y2 / 32)
       val newCellNum = getCellNumber(upperLeft, lowerRight)
       if(cellNum != newCellNum){
-        cells(cellNum).remove(this)
+        if(-1 != cellNum)
+          cells(cellNum).remove(this)
         cells(newCellNum).add(this)
         cellNum = newCellNum
       }
@@ -40,10 +41,8 @@ package object quadtree {
     }
   }
   
-  def check(i:Int){
-    Logger.debug(i + "番のセルをチェック")
+  def checkCell(i:Int){
     val list = cells(i).set.toList
-    Logger.debug(list)
     for(mover <- list){
       for(other <- list)
         mover.check(other)
@@ -53,16 +52,15 @@ package object quadtree {
       }
       stack.push(mover)
     }
-    Logger.debug(stack)
-    Logger.debug("スタックのサイズ" + stack.size)
     val base = i * 4 + 1
     if(cells.isDefinedAt(base)){
       val range = Range(base, base + 4)
       for(child <- range)
-        check(child)
+        checkCell(child)
     }
-    for(mover <- list)
+    for(mover <- list){
       stack.pop
+    }
   }
   
   def getMortonNumber(x:Int, y:Int):Int = {
