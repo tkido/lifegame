@@ -53,7 +53,7 @@ package object quadtree {
       stack.push(mover)
     }
     val base = i * 4 + 1
-    if(cells.isDefinedAt(base)){
+    if(base < 1365){
       val range = Range(base, base + 4)
       for(child <- range)
         checkCell(child)
@@ -79,14 +79,14 @@ package object quadtree {
   }
   
   def getCellNumber(upperLeft:Int, lowerRight:Int) :Int = {
-    val n = upperLeft ^ lowerRight
-    if((n>>8 & 0x3) != 0) return (lowerRight >> 10)       //L0
-    if((n>>6 & 0x3) != 0) return (lowerRight >>  8) + 1   //L1
-    if((n>>4 & 0x3) != 0) return (lowerRight >>  6) + 5   //L2
-    if((n>>2 & 0x3) != 0) return (lowerRight >>  4) + 21  //L3
-    if((n    & 0x3) != 0) return (lowerRight >>  2) + 85  //L4
-    if(n == 0)            return (lowerRight >>  0) + 341 //L5
-    return 0
+    upperLeft ^ lowerRight match{
+      case n if (n>>8 & 0x3) != 0 => 0                        //L0
+      case n if (n>>6 & 0x3) != 0 => (lowerRight >>  8) + 1   //L1
+      case n if (n>>4 & 0x3) != 0 => (lowerRight >>  6) + 5   //L2
+      case n if (n>>2 & 0x3) != 0 => (lowerRight >>  4) + 21  //L3
+      case n if (n    & 0x3) != 0 => (lowerRight >>  2) + 85  //L4
+      case _                      => (lowerRight >>  0) + 341 //L5
+    }
   }
   
   
