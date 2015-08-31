@@ -6,14 +6,10 @@ package object quadtree {
   
   import com.tkido.tools.Logger
   
-  val cells = Array.fill(1365)(new Cell)
+  val cells = Array.fill(1365)(Set[Mover]())
   val stack = new Stack[Mover]()
   
   trait Mover{
-    var x:Float
-    var y:Float
-    val radius:Float
-    
     var cellNum = -1
     
     def updatePosition(x1:Float, y1:Float, x2:Float, y2:Float){
@@ -31,18 +27,8 @@ package object quadtree {
     def check(other:Mover)
   }
   
-  class Cell(){
-    val set = Set[Mover]()
-    def add(elem:Mover){
-      set.add(elem)
-    }
-    def remove(elem:Mover){
-      set.remove(elem)
-    }
-  }
-  
   def checkCell(i:Int){
-    val list = cells(i).set.toList
+    val list = cells(i).toList
     for(mover <- list){
       for(other <- list)
         mover.check(other)

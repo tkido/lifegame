@@ -14,7 +14,6 @@ import com.tkido.tools.Logger
 object Bullet{
   val normalColor = new Color(0, 0, 255)
   val collisionedColor = new Color(255, 0, 0)
-  var count = 0
 }
 class Bullet(val radius:Float, var x:Float, var y:Float, var dx:Float, var dy:Float, var collisioned:Boolean) extends quadtree.Mover{
   override def toString :String = {
@@ -28,8 +27,6 @@ class Bullet(val radius:Float, var x:Float, var y:Float, var dx:Float, var dy:Fl
   }
   
   def update{
-    Bullet.count = 0
-    
     x += dx
     if(x - radius < 0.0){
       x = 2 * radius - x
@@ -71,11 +68,13 @@ class Bullet(val radius:Float, var x:Float, var y:Float, var dx:Float, var dy:Fl
   }
   
   def check(other:quadtree.Mover){
-    Bullet.count += 1
-    //Logger.debug(this, other, "比較")
-    if(!this.equals(other))
-      if(square(x - other.x) + square(y - other.y) < square(radius + other.radius))
-        collisioned = true
+    if(this.equals(other))
+      return
+    other match{
+      case other:Bullet =>
+        if(square(x - other.x) + square(y - other.y) < square(radius + other.radius))
+          collisioned = true
+    }
   }
 }
 
@@ -142,12 +141,6 @@ object main extends SimpleSwingApplication {
       for(bullet <- bullets)
         bullet.update
       quadtree.checkCell(0)
-      
-      //for(bullet <- bullets)
-      //  for(other <- bullets)
-      //    bullet.check(other)
-      
-      //Logger.debug("チェック回数：" + Bullet.count)
     }
   }
     
