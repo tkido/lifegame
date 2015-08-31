@@ -117,6 +117,12 @@ object main extends SimpleSwingApplication {
     resizable = false
     iconImage = ImageLoader("favicon.bmp")
     contents = mainPanel
+    val timer = new javax.swing.Timer(5, Swing.ActionListener(e =>
+    {
+      ui.space
+      frame.repaint
+    }))
+    timer.start
   }
   def mainPanel = new Panel {
     preferredSize = new Dimension(fieldWidth, fieldHeight)
