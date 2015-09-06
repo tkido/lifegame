@@ -71,22 +71,10 @@ abstract class Life() extends quadtree.Mover{
   }
   
   def check(other:quadtree.Mover)
-  /*
-  if(this.equals(other))
-    return
-  other match{
-    case other:Life =>
-      if(square(x - other.x) + square(y - other.y) < square(radius + other.radius))
-        1
-  }
-  * 
-  */
   
 }
 
-class Plant(var x:Double, var y:Double) extends Life{
-  var dx:Double = 0.0
-  var dy:Double = 0.0
+class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Life{
   var radius:Double = 1.0
   var energy:Double = 1.0
   
@@ -105,15 +93,25 @@ class Plant(var x:Double, var y:Double) extends Life{
   }
   
   override def update{
+    super.update
+    
+    dx = 0.0
+    dy = 0.0
     energy *= 1.01 - 0.0017 * collisionCount
     collisionCount = 0
-    super.update
+    
+    if(energy >= 15){
+      energy = 10
+      Range(0, 5).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 20 - 10, Random.nextDouble * 20 - 10)))
+    }
   }
   
 }
 
 
 object main extends SimpleSwingApplication {
+  import scala.collection.mutable.MutableList
+  
   import com.tkido.collision.Config
   import com.tkido.swing.ImageLoader
   import com.tkido.tools.Logger
@@ -129,8 +127,13 @@ object main extends SimpleSwingApplication {
   
   val icon = ImageLoader("favicon.bmp")
   
-  val lives = Range(0, 100).map(_ => new Plant(Random.nextDouble * fieldWidth, Random.nextDouble * fieldHeight))
+  var lives = MutableList[Life]()
+  Range(0, 100).map(_ => lives += new Plant(Random.nextDouble * fieldWidth, Random.nextDouble * fieldHeight, 0.0, 0.0))
+  val newComers = MutableList[Life]()
 
+  def addLife(life:Life){
+    newComers += life
+  }
   
   def onKeyPress(keyCode: Value) = keyCode match {
     case Key.Space => ui.space()
@@ -180,6 +183,11 @@ object main extends SimpleSwingApplication {
       for(life <- lives)
         life.update
       quadtree.checkCell(0)
+      lives ++= newComers
+      Logger.debug("Polulation before = %s" format lives.size)
+      lives = lives.filter(_.energy > 0.0)
+      Logger.debug("Polulation after = %s" format lives.size)
+      newComers.clear
     }
   }
     
