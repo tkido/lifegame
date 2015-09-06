@@ -86,8 +86,11 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
       return
     other match{
       case plant:Plant =>
-        if(square(x - plant.x) + square(y - plant.y) < square(radius + plant.radius))
+        if(square(x - plant.x) + square(y - plant.y) < square(radius + plant.radius)){
+          if(energy >= 10.0 && plant.energy <= 2.0)
+            plant.energy = 0.0
           collisionCount += 1
+        }
       case _ =>
     }
   }
@@ -120,8 +123,8 @@ class Grazer(var x:Double, var y:Double) extends Life{
   var dx:Double = 0.0
   var dy:Double = 0.0
   
-  var nearX:Double = -1024.0
-  var nearY:Double = -1024.0
+  var nearX:Double = 2024.0
+  var nearY:Double = 2024.0
 
   val color:Color = new Color(0, 0, 255)
   
@@ -136,7 +139,7 @@ class Grazer(var x:Double, var y:Double) extends Life{
           
         }
         if(square(x - plant.x) + square(y - plant.y) < square(radius + 20 + plant.radius)){
-          if(square(x - plant.x) + square(y - plant.y) > square(x - nearX) + square(y - nearY)){
+          if(square(x - plant.x) + square(y - plant.y) < square(x - nearX) + square(y - nearY)){
             nearX = plant.x
             nearY = plant.y
           }
@@ -146,17 +149,23 @@ class Grazer(var x:Double, var y:Double) extends Life{
   }
   
   override def update{
-    if(nearX == -1024.0){
+    if(nearX == 2024.0 && nearY == 2024.0){
       //見つからないときランダムに動く
       dx = Random.nextInt(3) - 1
       dy = Random.nextInt(3) - 1
     }else{
+      dx = (nearX - x)
+      dy = (nearY - y)
       val distance = math.sqrt(square(x - nearX) + square(y - nearY))
-      dx = (x - nearX) / distance
-      dy = (y - nearY) / distance
+      Logger.debug(distance)
+      
+      if(distance >= 1.0){
+        dx = dx / distance
+        dy = dy / distance
+      }
     }
-    nearX = -1024.0
-    nearY = -1024.0
+    nearX = 2024.0
+    nearY = 2024.0
     
     super.update
     
@@ -201,7 +210,7 @@ object main extends SimpleSwingApplication {
   
   var lives = MutableList[Life]()
   Range(0, 100).map(_ => lives += new Plant(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength, 0.0, 0.0))
-  Range(0, 100).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
+  Range(0, 10).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
   val newComers = MutableList[Life]()
 
   def addLife(life:Life){
