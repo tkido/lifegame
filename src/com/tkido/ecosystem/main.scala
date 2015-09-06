@@ -24,6 +24,13 @@ abstract class Life() extends quadtree.Mover{
   val color:Color
   
   protected def square(x:Double) :Double = x * x
+  protected def sanitize(x:Double) :Double = {
+    x match {
+      case x if x < 0.0 => 0.0
+      case x if x >= fieldLength => - 0.0001
+      case _ => x
+    }
+  }
   
   def paint(g: Graphics2D) {
     g.setColor(color)
@@ -37,8 +44,8 @@ abstract class Life() extends quadtree.Mover{
     if(x - radius < 0.0){
       x = 2 * radius - x
       dx *= -1
-    }else if(x + radius >= fieldWidth){
-      x = 2 * fieldWidth -2 * radius - x
+    }else if(x + radius >= fieldLength){
+      x = 2 * fieldLength -2 * radius - x
       dx *= -1
     }
     
@@ -46,28 +53,20 @@ abstract class Life() extends quadtree.Mover{
     if(y - radius < 0.0){
       y = 2 * radius - y
       dy *= -1
-    }else if(y + radius >= fieldHeight){
-      y = 2 * fieldHeight -2 * radius - y
+    }else if(y + radius >= fieldLength){
+      y = 2 * fieldLength -2 * radius - y
       dy *= -1
     }
     
-    val x1 = x match {
-      case x if x - radius < 0.0 => 0.0
-      case x => x - radius
-    }
-    val y1 = y match {
-      case y if y - radius < 0.0 => 0.0
-      case y => y - radius
-    }
-    val x2 = x match {
-      case x if x + radius >= fieldWidth => fieldWidth - 0.0001
-      case x => x + radius
-    }
-    val y2 = y match {
-      case y if y + radius >= fieldHeight => fieldHeight - 0.0001
-      case y => y + radius
-    }
-    updatePosition(x1, y1, x2, y2)
+    updateCell()
+  }
+  
+  def updateCell(){
+    val x1 = sanitize(x - radius)
+    val y1 = sanitize(y - radius)
+    val x2 = sanitize(x + radius)
+    val y2 = sanitize(y + radius)
+    super.updateCell(x1, y1, x2, y2)
   }
   
   def check(other:quadtree.Mover)
@@ -86,9 +85,10 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
     if(this.equals(other))
       return
     other match{
-      case other:Plant =>
-        if(square(x - other.x) + square(y - other.y) < square(radius + other.radius))
+      case plant:Plant =>
+        if(square(x - plant.x) + square(y - plant.y) < square(radius + plant.radius))
           collisionCount += 1
+      case _ =>
     }
   }
   
@@ -97,16 +97,87 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
     
     dx = 0.0
     dy = 0.0
-    energy *= 1.01 - 0.0017 * collisionCount
+    
+    val de = collisionCount match{
+      case 0 => energy * 0.01
+      case _ => energy * 0.01 * (1.0 / collisionCount)
+    }
+    energy += de
     collisionCount = 0
     
-    if(energy >= 15){
-      energy = 10
-      Range(0, 5).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 20 - 10, Random.nextDouble * 20 - 10)))
+    if(energy >= 13.0){
+      energy = 10.0
+      Range(0, 3).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 20 - 10, Random.nextDouble * 20 - 10)))
+    }
+    energy *= 0.999
+    energy -= 0.001
+  }
+}
+
+class Grazer(var x:Double, var y:Double) extends Life{
+  var radius:Double = 1.0
+  var energy:Double = 1.0
+  var dx:Double = 0.0
+  var dy:Double = 0.0
+  
+  var nearX:Double = -1024.0
+  var nearY:Double = -1024.0
+
+  val color:Color = new Color(0, 0, 255)
+  
+  def check(other:quadtree.Mover){
+    if(this.equals(other))
+      return
+    other match{
+      case plant:Plant =>
+        if(square(x - plant.x) + square(y - plant.y) < square(radius + plant.radius)){
+          energy += plant.energy / 10
+          plant.energy = 0.0
+          
+        }
+        if(square(x - plant.x) + square(y - plant.y) < square(radius + 20 + plant.radius)){
+          if(square(x - plant.x) + square(y - plant.y) > square(x - nearX) + square(y - nearY)){
+            nearX = plant.x
+            nearY = plant.y
+          }
+        }
+      case _ =>
     }
   }
   
+  override def update{
+    if(nearX == -1024.0){
+      //見つからないときランダムに動く
+      dx = Random.nextInt(3) - 1
+      dy = Random.nextInt(3) - 1
+    }else{
+      val distance = math.sqrt(square(x - nearX) + square(y - nearY))
+      dx = (x - nearX) / distance
+      dy = (y - nearY) / distance
+    }
+    nearX = -1024.0
+    nearY = -1024.0
+    
+    super.update
+    
+    if(energy >= 13.0){
+      energy = 10.0
+      Range(0, 3).map(_ => main.addLife(new Grazer(x, y)))
+    }
+    
+    energy *= 0.999
+    energy -= 0.001
+  }
+  
+  override def updateCell(){
+    val x1 = sanitize(x - radius - 20)
+    val y1 = sanitize(y - radius - 20)
+    val x2 = sanitize(x + radius + 20)
+    val y2 = sanitize(y + radius + 20)
+    super.updateCell(x1, y1, x2, y2)
+  }
 }
+
 
 
 object main extends SimpleSwingApplication {
@@ -120,7 +191,8 @@ object main extends SimpleSwingApplication {
   import java.awt.Color
   
   Logger.level = Config.logLevel
-
+  var count = 0
+  
   val bgColor = new Color(255, 255, 255)
   
   val ui = new AbstractUI
@@ -128,7 +200,8 @@ object main extends SimpleSwingApplication {
   val icon = ImageLoader("favicon.bmp")
   
   var lives = MutableList[Life]()
-  Range(0, 100).map(_ => lives += new Plant(Random.nextDouble * fieldWidth, Random.nextDouble * fieldHeight, 0.0, 0.0))
+  Range(0, 100).map(_ => lives += new Plant(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength, 0.0, 0.0))
+  Range(0, 100).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
   val newComers = MutableList[Life]()
 
   def addLife(life:Life){
@@ -161,7 +234,7 @@ object main extends SimpleSwingApplication {
     timer.start
   }
   def mainPanel = new Panel {
-    preferredSize = new Dimension(fieldWidth, fieldHeight)
+    preferredSize = new Dimension(fieldLength, fieldLength)
     focusable = true
     listenTo(keys, this.mouse.moves)
     
@@ -184,10 +257,10 @@ object main extends SimpleSwingApplication {
         life.update
       quadtree.checkCell(0)
       lives ++= newComers
-      Logger.debug("Polulation before = %s" format lives.size)
       lives = lives.filter(_.energy > 0.0)
-      Logger.debug("Polulation after = %s" format lives.size)
       newComers.clear
+      count += 1
+      Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
     }
   }
     

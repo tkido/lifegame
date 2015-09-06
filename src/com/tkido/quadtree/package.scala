@@ -12,7 +12,7 @@ package object quadtree {
   trait Mover{
     var cellNum = -1
     
-    def updatePosition(x1:Double, y1:Double, x2:Double, y2:Double){
+    def updateCell(x1:Double, y1:Double, x2:Double, y2:Double){
       val upperLeft = getMortonNumber(x1 / 32, y1 / 32)
       val lowerRight = getMortonNumber(x2 / 32, y2 / 32)
       val newCellNum = getCellNumber(upperLeft, lowerRight)
