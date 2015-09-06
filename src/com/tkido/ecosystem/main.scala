@@ -101,16 +101,12 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
     dx = 0.0
     dy = 0.0
     
-    val de = collisionCount match{
-      case 0 => energy * 0.01
-      case _ => energy * 0.01 * (1.0 / collisionCount)
-    }
-    energy += de
+    energy *= (1.02 - 0.003 * collisionCount)
     collisionCount = 0
     
     if(energy >= 13.0){
       energy = 10.0
-      Range(0, 3).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 20 - 10, Random.nextDouble * 20 - 10)))
+      Range(0, 3).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 40 - 20, Random.nextDouble * 40 - 20)))
     }
     energy *= 0.999
     energy -= 0.001
@@ -123,6 +119,7 @@ class Grazer(var x:Double, var y:Double) extends Life{
   var dx:Double = 0.0
   var dy:Double = 0.0
   
+  var seek = false
   var nearX:Double = 2024.0
   var nearY:Double = 2024.0
 
@@ -138,7 +135,7 @@ class Grazer(var x:Double, var y:Double) extends Life{
           plant.energy = 0.0
           
         }
-        if(square(x - plant.x) + square(y - plant.y) < square(radius + 20 + plant.radius)){
+        if(square(x - plant.x) + square(y - plant.y) < square(radius + 10 + plant.radius)){
           if(square(x - plant.x) + square(y - plant.y) < square(x - nearX) + square(y - nearY)){
             nearX = plant.x
             nearY = plant.y
@@ -150,15 +147,16 @@ class Grazer(var x:Double, var y:Double) extends Life{
   
   override def update{
     if(nearX == 2024.0 && nearY == 2024.0){
-      //見つからないときランダムに動く
-      dx = Random.nextInt(3) - 1
-      dy = Random.nextInt(3) - 1
+      if(!seek){
+        seek = true
+        dx = Random.nextInt(3) - 1
+        dy = Random.nextInt(3) - 1
+      }
     }else{
+      seek = false
       dx = (nearX - x)
       dy = (nearY - y)
       val distance = math.sqrt(square(x - nearX) + square(y - nearY))
-      Logger.debug(distance)
-      
       if(distance >= 1.0){
         dx = dx / distance
         dy = dy / distance
@@ -176,6 +174,79 @@ class Grazer(var x:Double, var y:Double) extends Life{
     
     energy *= 0.999
     energy -= 0.001
+  }
+  
+  override def updateCell(){
+    val x1 = sanitize(x - radius - 10)
+    val y1 = sanitize(y - radius - 10)
+    val x2 = sanitize(x + radius + 10)
+    val y2 = sanitize(y + radius + 10)
+    super.updateCell(x1, y1, x2, y2)
+  }
+}
+
+
+class Predator(var x:Double, var y:Double) extends Life{
+  var radius:Double = 1.0
+  var energy:Double = 1.0
+  var dx:Double = 0.0
+  var dy:Double = 0.0
+  
+  var nearX:Double = 2024.0
+  var nearY:Double = 2024.0
+  var seek = false
+
+  val color:Color = new Color(255, 0, 0)
+  
+  def check(other:quadtree.Mover){
+    if(this.equals(other))
+      return
+    other match{
+      case grazer:Grazer =>
+        if(square(x - grazer.x) + square(y - grazer.y) < square(radius + grazer.radius)){
+          energy += grazer.energy / 5
+          grazer.energy = 0.0
+          
+        }
+        if(square(x - grazer.x) + square(y - grazer.y) < square(radius + 20 + grazer.radius)){
+          if(square(x - grazer.x) + square(y - grazer.y) < square(x - nearX) + square(y - nearY)){
+            nearX = grazer.x
+            nearY = grazer.y
+          }
+        }
+      case _ =>
+    }
+  }
+  
+  override def update{
+    if(nearX == 2024.0 && nearY == 2024.0){
+      if(!seek){
+        seek = true
+        dx = Random.nextInt(3) - 1
+        dy = Random.nextInt(3) - 1
+      }
+    }else{
+      seek = false
+      dx = (nearX - x)
+      dy = (nearY - y)
+      val distance = math.sqrt(square(x - nearX) + square(y - nearY))
+      if(distance >= 2.0){
+        dx = dx / distance
+        dy = dy / distance
+      }
+    }
+    nearX = 2024.0
+    nearY = 2024.0
+    
+    super.update
+    
+    if(energy >= 13.0){
+      energy = 10.0
+      Range(0, 3).map(_ => main.addLife(new Predator(x, y)))
+    }
+    
+    energy *= 0.999
+    energy -= 0.0005
   }
   
   override def updateCell(){
@@ -209,8 +280,9 @@ object main extends SimpleSwingApplication {
   val icon = ImageLoader("favicon.bmp")
   
   var lives = MutableList[Life]()
-  Range(0, 100).map(_ => lives += new Plant(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength, 0.0, 0.0))
-  Range(0, 10).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
+  Range(0, 2000).map(_ => lives += new Plant(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength, 0.0, 0.0))
+  Range(0, 100).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
+  Range(0, 50).map(_ => lives += new Predator(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
   val newComers = MutableList[Life]()
 
   def addLife(life:Life){
@@ -266,6 +338,7 @@ object main extends SimpleSwingApplication {
         life.update
       quadtree.checkCell(0)
       lives ++= newComers
+      lives.filter(_.energy <= 0.0).map(_.remove)
       lives = lives.filter(_.energy > 0.0)
       newComers.clear
       count += 1

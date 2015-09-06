@@ -24,6 +24,10 @@ package object quadtree {
       }
     }
     
+    def remove(){
+      cells(this.cellNum).remove(this)
+    }
+      
     def check(other:Mover)
   }
   
