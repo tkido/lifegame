@@ -12,7 +12,7 @@ package object quadtree {
   trait Mover{
     var cellNum = -1
     
-    def updatePosition(x1:Float, y1:Float, x2:Float, y2:Float){
+    def updateCell(x1:Double, y1:Double, x2:Double, y2:Double){
       val upperLeft = getMortonNumber(x1 / 32, y1 / 32)
       val lowerRight = getMortonNumber(x2 / 32, y2 / 32)
       val newCellNum = getCellNumber(upperLeft, lowerRight)
@@ -24,6 +24,10 @@ package object quadtree {
       }
     }
     
+    def remove(){
+      cells(this.cellNum).remove(this)
+    }
+      
     def check(other:Mover)
   }
   
@@ -60,7 +64,7 @@ package object quadtree {
     }
     return separate(x) | separate(y)<<1
   }
-  def getMortonNumber(x:Float, y:Float) :Int = {
+  def getMortonNumber(x:Double, y:Double) :Int = {
     getMortonNumber(x.toInt, y.toInt)
   }
   

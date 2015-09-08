@@ -63,7 +63,7 @@ class Bullet(val radius:Float, var x:Float, var y:Float, var dx:Float, var dy:Fl
       case y if y + radius >= fieldHeight => fieldHeight - 0.0001f
       case y => y + radius
     }
-    updatePosition(x1, y1, x2, y2)
+    updateCell(x1, y1, x2, y2)
     //Logger.debug(cellNum)
   }
   
