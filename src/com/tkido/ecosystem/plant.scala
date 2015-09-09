@@ -2,7 +2,7 @@ package com.tkido.ecosystem
 
 import java.awt.Color
 import scala.util.Random
-import com.tkido.quadtree
+import com.tkido.quadtree.Mover
 
 object Plant {
 
@@ -16,13 +16,13 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
   
   val color:Color = new Color(0, 255, 0)
   
-  def check(other:quadtree.Mover){
+  def check(other:Mover){
     if(this.equals(other))
       return
     other match{
       case plant:Plant =>
         if(square(x - plant.x) + square(y - plant.y) < square(radius + plant.radius)){
-          if(energy >= 10.0 && plant.energy <= 2.0)
+          if(energy >= 10.0 && plant.energy < 2.0)
             plant.energy = 0.0
           collisionCount += 1
         }
@@ -41,7 +41,7 @@ class Plant(var x:Double, var y:Double, var dx:Double, var dy:Double) extends Li
     
     if(energy >= 13.0){
       energy = 10.0
-      Range(0, 3).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 40 - 20, Random.nextDouble * 40 - 20)))
+      Range(0, 3).map(_ => main.addLife(new Plant(x, y, Random.nextDouble * 100 - 50, Random.nextDouble * 100 - 50)))
     }
     energy *= 0.999
     energy -= 0.001

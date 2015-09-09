@@ -2,7 +2,8 @@ package com.tkido.ecosystem
 
 import java.awt.Color
 import scala.util.Random
-import com.tkido.quadtree
+import com.tkido.math.Vector
+import com.tkido.quadtree.Mover
 
 object Grazer {
 
@@ -21,7 +22,7 @@ class Grazer(var x:Double, var y:Double) extends Life{
 
   val color:Color = new Color(0, 0, 255)
   
-  def check(other:quadtree.Mover){
+  def check(other:Mover){
     if(this.equals(other))
       return
     other match{
@@ -45,8 +46,9 @@ class Grazer(var x:Double, var y:Double) extends Life{
     if(nearX == 2024.0 && nearY == 2024.0){
       if(!seek){
         seek = true
-        dx = Random.nextInt(3) - 1
-        dy = Random.nextInt(3) - 1
+        val v = com.tkido.math.nextVector
+        dx = v.x
+        dy = v.y
       }
     }else{
       seek = false
@@ -63,9 +65,9 @@ class Grazer(var x:Double, var y:Double) extends Life{
     
     super.update
     
-    if(energy >= 13.0){
+    if(energy >= 12.0){
       energy = 10.0
-      Range(0, 3).map(_ => main.addLife(new Grazer(x, y)))
+      Range(0, 2).map(_ => main.addLife(new Grazer(x, y)))
     }
     
     energy *= 0.999

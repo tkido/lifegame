@@ -2,7 +2,8 @@ package com.tkido.ecosystem
 
 import java.awt.Color
 import scala.util.Random
-import com.tkido.quadtree
+import com.tkido.math.Vector
+import com.tkido.quadtree.Mover
 
 object Predator {
 }
@@ -19,13 +20,13 @@ class Predator(var x:Double, var y:Double) extends Life{
 
   val color:Color = new Color(255, 0, 0)
   
-  def check(other:quadtree.Mover){
+  def check(other:Mover){
     if(this.equals(other))
       return
     other match{
       case grazer:Grazer =>
         if(square(x - grazer.x) + square(y - grazer.y) < square(radius + grazer.radius)){
-          energy += grazer.energy / 5
+          energy += grazer.energy / 10
           grazer.energy = 0.0
           
         }
@@ -43,8 +44,9 @@ class Predator(var x:Double, var y:Double) extends Life{
     if(nearX == 2024.0 && nearY == 2024.0){
       if(!seek){
         seek = true
-        dx = Random.nextInt(3) - 1
-        dy = Random.nextInt(3) - 1
+        val v = com.tkido.math.nextVector
+        dx = v.x * 2.0
+        dy = v.y * 2.0
       }
     }else{
       seek = false
@@ -52,8 +54,8 @@ class Predator(var x:Double, var y:Double) extends Life{
       dy = (nearY - y)
       val distance = math.sqrt(square(x - nearX) + square(y - nearY))
       if(distance >= 2.0){
-        dx = dx / distance
-        dy = dy / distance
+        dx = 2.0 * dx / distance
+        dy = 2.0 * dy / distance
       }
     }
     nearX = 2024.0
@@ -61,13 +63,13 @@ class Predator(var x:Double, var y:Double) extends Life{
     
     super.update
     
-    if(energy >= 13.0){
+    if(energy >= 11.0){
       energy = 10.0
-      Range(0, 3).map(_ => main.addLife(new Predator(x, y)))
+      Range(0, 1).map(_ => main.addLife(new Predator(x, y)))
     }
     
     energy *= 0.999
-    energy -= 0.0005
+    energy -= 0.001
   }
   
   override def updateCell(){
