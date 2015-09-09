@@ -9,6 +9,7 @@ import scala.swing.event.Key._
 import scala.util.Random
 import java.awt.geom.Ellipse2D
 
+import com.tkido.math.Vector
 import com.tkido.quadtree
 import com.tkido.tools.Logger
 
@@ -33,9 +34,9 @@ object main extends SimpleSwingApplication {
   val icon = ImageLoader("favicon.bmp")
   
   var lives = MutableList[Life]()
-  Range(0, 1000).map(_ => lives += new Plant(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength, 0.0, 0.0))
-  Range(0, 100).map(_ => lives += new Grazer(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
-  Range(0, 20).map(_ => lives += new Predator(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength))
+  Range(0, 1000).map(_ => lives += new Plant(Vector(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength), Vector(0.0, 0.0)))
+  Range(0, 100).map(_ => lives += new Grazer(Vector(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength)))
+  Range(0, 20).map(_ => lives += new Predator(Vector(Random.nextDouble * fieldLength, Random.nextDouble * fieldLength)))
   val newComers = MutableList[Life]()
 
   def addLife(life:Life){

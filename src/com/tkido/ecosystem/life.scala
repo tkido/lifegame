@@ -5,18 +5,16 @@ import java.awt.Color
 import java.awt.geom.Ellipse2D
 
 import com.tkido.quadtree
+import com.tkido.math.Vector
 
 abstract class Life() extends quadtree.Mover{
-  var x:Double
-  var y:Double
-  var dx:Double
-  var dy:Double
+  var v:Vector
+  var dv:Vector
   var radius:Double
   var energy:Double
   
   val color:Color
   
-  protected def square(x:Double) :Double = x * x
   protected def sanitize(x:Double) :Double = {
     x match {
       case x if x < 0.0 => 0.0
@@ -27,13 +25,19 @@ abstract class Life() extends quadtree.Mover{
   
   def paint(g: Graphics2D) {
     g.setColor(color)
-    g.fill(new Ellipse2D.Double(x - radius, y - radius, radius * 2 , radius * 2))
+    g.fill(new Ellipse2D.Double(v.x - radius, v.y - radius, radius * 2 , radius * 2))
   }
   
   def update{
     radius = math.sqrt(energy)
     
-    x += dx
+    v += dv
+    
+    var x = v.x
+    var y = v.y
+    var dx = dv.x
+    var dy = dv.y
+    
     if(x - radius < 0.0){
       x = 2 * radius - x
       dx *= -1
@@ -51,14 +55,17 @@ abstract class Life() extends quadtree.Mover{
       dy *= -1
     }
     
+    v = Vector(x, y)
+    dv = Vector(dx, dy)
+    
     updateCell()
   }
   
   def updateCell(){
-    val x1 = sanitize(x - radius)
-    val y1 = sanitize(y - radius)
-    val x2 = sanitize(x + radius)
-    val y2 = sanitize(y + radius)
+    val x1 = sanitize(v.x - radius)
+    val y1 = sanitize(v.y - radius)
+    val x2 = sanitize(v.x + radius)
+    val y2 = sanitize(v.y + radius)
     super.updateCell(x1, y1, x2, y2)
   }
   

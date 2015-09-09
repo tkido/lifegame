@@ -26,6 +26,7 @@ case class Vector(x:Double, y:Double) extends Ordered[Vector]{
     }
   
   def size() :Double = sqrt(x * x + y * y)
+  def regulated = this / size
   
   override def toString = "(%s,%s)".format(x, y)
 }

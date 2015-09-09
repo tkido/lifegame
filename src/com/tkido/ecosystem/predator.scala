@@ -6,34 +6,39 @@ import com.tkido.math.Vector
 import com.tkido.quadtree.Mover
 
 object Predator {
+  val speed = 2.0
+  val range = 20.0
+  val color:Color = new Color(255, 0, 0)
 }
 
-class Predator(var x:Double, var y:Double) extends Life{
+class Predator(var v:Vector) extends Life{
   var radius:Double = 1.0
   var energy:Double = 1.0
-  var dx:Double = 0.0
-  var dy:Double = 0.0
+  var dv = Vector(0.0, 0.0)
   
-  var nearX:Double = 2024.0
-  var nearY:Double = 2024.0
   var seek = false
+  var target:Option[Vector] = None
 
-  val color:Color = new Color(255, 0, 0)
+  val color:Color = Predator.color
   
   def check(other:Mover){
     if(this.equals(other))
       return
     other match{
-      case grazer:Grazer =>
-        if(square(x - grazer.x) + square(y - grazer.y) < square(radius + grazer.radius)){
-          energy += grazer.energy / 10
-          grazer.energy = 0.0
-          
+      case g:Grazer =>
+        if((v - g.v).size < radius + g.radius){
+          energy += g.energy / 10
+          g.energy = 0.0
         }
-        if(square(x - grazer.x) + square(y - grazer.y) < square(radius + 20 + grazer.radius)){
-          if(square(x - grazer.x) + square(y - grazer.y) < square(x - nearX) + square(y - nearY)){
-            nearX = grazer.x
-            nearY = grazer.y
+        if((v - g.v).size < radius + Predator.range + g.radius){
+          target = target match {
+            case Some(w) =>
+              if((v - g.v).size < (v - w).size)
+                Some(g.v)
+              else
+                target
+            case None =>
+              Some(g.v)
           }
         }
       case _ =>
@@ -41,31 +46,23 @@ class Predator(var x:Double, var y:Double) extends Life{
   }
   
   override def update{
-    if(nearX == 2024.0 && nearY == 2024.0){
-      if(!seek){
-        seek = true
-        val v = com.tkido.math.nextVector
-        dx = v.x * 2.0
-        dy = v.y * 2.0
-      }
-    }else{
-      seek = false
-      dx = (nearX - x)
-      dy = (nearY - y)
-      val distance = math.sqrt(square(x - nearX) + square(y - nearY))
-      if(distance >= 2.0){
-        dx = 2.0 * dx / distance
-        dy = 2.0 * dy / distance
-      }
+    target match{
+      case Some(w) =>
+        seek = false
+        dv = (w - v).regulated * Predator.speed
+      case None =>
+        if(!seek){
+          seek = true
+          dv = com.tkido.math.nextVector * Predator.speed
+        }
     }
-    nearX = 2024.0
-    nearY = 2024.0
+    target = None
     
     super.update
     
     if(energy >= 11.0){
       energy = 10.0
-      Range(0, 1).map(_ => main.addLife(new Predator(x, y)))
+      Range(0, 1).map(_ => main.addLife(new Predator(v)))
     }
     
     energy *= 0.999
@@ -73,10 +70,10 @@ class Predator(var x:Double, var y:Double) extends Life{
   }
   
   override def updateCell(){
-    val x1 = sanitize(x - radius - 20)
-    val y1 = sanitize(y - radius - 20)
-    val x2 = sanitize(x + radius + 20)
-    val y2 = sanitize(y + radius + 20)
+    val x1 = sanitize(v.x - radius - Predator.range)
+    val y1 = sanitize(v.y - radius - Predator.range)
+    val x2 = sanitize(v.x + radius + Predator.range)
+    val y2 = sanitize(v.y + radius + Predator.range)
     super.updateCell(x1, y1, x2, y2)
   }
 }
