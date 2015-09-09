@@ -19,6 +19,7 @@ class Grazer(var v:Vector) extends Life{
   
   var seek = false
   var target:Option[Vector] = None
+  var enemy:Option[Vector] = None
 
   val color:Color = Grazer.color
   
@@ -42,21 +43,40 @@ class Grazer(var v:Vector) extends Life{
               Some(p.v)
           }
         }
+      case p:Predator =>
+        if((v - p.v).size < radius + Grazer.range + p.radius){
+          enemy = enemy match {
+            case Some(w) =>
+              if((v - p.v).size < (v - w).size)
+                Some(p.v)
+              else
+                enemy
+            case None =>
+              Some(p.v)
+          }
+        }
       case _ =>
     }
   }
   
   override def update{
-    target match{
+    enemy match {
       case Some(w) =>
         seek = false
-        dv = (w - v).regulated * Grazer.speed
+        dv = (v - w).regulated * Grazer.speed
       case None =>
-        if(!seek){
-          seek = true
-          dv = com.tkido.math.nextVector * Grazer.speed
+        target match{
+          case Some(w) =>
+            seek = false
+            dv = (w - v).regulated * Grazer.speed
+          case None =>
+            if(!seek){
+              seek = true
+              dv = com.tkido.math.nextVector * Grazer.speed
+            }
         }
     }
+    enemy = None
     target = None
     
     super.update
