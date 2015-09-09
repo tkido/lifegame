@@ -86,8 +86,8 @@ class Grazer(var v:Vector) extends Life{
       Range(0, 2).map(_ => main.addLife(new Grazer(v)))
     }
     
-    energy *= 0.999
-    energy -= 0.001
+    energy *= 0.995
+    energy -= 0.005
   }
   
   override def updateCell(){

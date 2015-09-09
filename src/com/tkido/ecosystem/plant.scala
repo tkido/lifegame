@@ -43,7 +43,7 @@ class Plant(var v:Vector, var dv:Vector) extends Life{
       energy = 10.0
       Range(0, 3).map(_ => main.addLife(new Plant(v, Vector(Random.nextDouble * 100 - 50, Random.nextDouble * 100 - 50))))
     }
-    energy *= 0.999
-    energy -= 0.001
+    energy *= 0.995
+    energy -= 0.01
   }
 }

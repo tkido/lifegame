@@ -66,7 +66,7 @@ class Predator(var v:Vector) extends Life{
     }
     
     energy *= 0.999
-    energy -= 0.001
+    energy -= 0.0001
   }
   
   override def updateCell(){
