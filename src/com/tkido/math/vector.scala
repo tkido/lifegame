@@ -1,27 +1,32 @@
 package com.tkido.math
 
-case class Vector(x:Int, y:Int) extends Ordered[Vector]{
-  def unary_+ :Vector = Vector(x, y)
-  def unary_- :Vector = Vector(-x, -y)
+import scala.math.sqrt
+
+case class Vector(x:Double, y:Double) extends Ordered[Vector]{
+  def unary_+ = this
+  def unary_- = Vector(-x, -y)
   
-  def +(that:Vector) :Vector =
+  def +(that:Vector) =
     Vector(x + that.x, y + that.y)
-  def -(that:Vector) :Vector =
+  def -(that:Vector) =
     Vector(x - that.x, y - that.y)
 
-  def *(that: Vector) :Vector =
+  def *(that: Vector) =
     Vector(x * that.x - y * that.y,
            x * that.y + y * that.x)
-  def *(scalar:Int) :Vector =
+  def *(scalar:Double) =
     Vector(x * scalar, y * scalar)
-  def /(scalar:Int) :Vector =
+  def /(scalar:Double) =
     Vector(x / scalar, y / scalar)
   
   def compare(that:Vector) =
     (y - that.y) match{
-      case 0 => x - that.x
-      case _ => y - that.y
+      case 0 => (x - that.x).toInt
+      case _ => (y - that.y).toInt
     }
   
-  override def toString = "(%d,%d)".format(x, y)
+  def size = sqrt(x * x + y * y)
+  def regulated = this / size
+  
+  override def toString = "(%s,%s)".format(x, y)
 }
