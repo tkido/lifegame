@@ -21,8 +21,14 @@ case class Vector(x:Double, y:Double) extends Ordered[Vector]{
   
   def compare(that:Vector) =
     (y - that.y) match{
-      case 0 => (x - that.x).toInt
-      case _ => (y - that.y).toInt
+      case 0.0 =>
+        (x - that.x) match{
+          case 0.0 => 0
+          case d if d > 0.0 => 1
+          case _ => -1
+        }
+      case d if d > 0.0 => 1
+      case _ => -1
     }
   
   def size = sqrt(x * x + y * y)
