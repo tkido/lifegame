@@ -10,9 +10,10 @@ import com.tkido.collision.{Manager, Mover}
 import com.tkido.tools.Logger
 
 class Field(val length:Int) {
-  val level = 5
+  val level = 4
   val cm = Manager(level)
-  val zoom = length / (powInt(2, level))
+  val splitRate = length / powInt(2, level)
+  
   var count = 0
   var lives = MutableList[Life]()
   val newComers = MutableList[Life]()
@@ -39,7 +40,6 @@ class Field(val length:Int) {
     lives = lives.filter(_.energy > 0.0)
     newComers.clear
     count += 1
-    //Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
   }
   
   def nextVector() :Vector =
@@ -54,10 +54,10 @@ class Field(val length:Int) {
       }
     }
     cm.updateCell(life,
-                  sanitize(x1) / zoom,
-                  sanitize(y1) / zoom,
-                  sanitize(x2) / zoom,
-                  sanitize(y2) / zoom)
+                  sanitize(x1) / splitRate,
+                  sanitize(y1) / splitRate,
+                  sanitize(x2) / splitRate,
+                  sanitize(y2) / splitRate)
   }
 }
 object Field {

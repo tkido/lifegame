@@ -14,7 +14,7 @@ import com.tkido.tools.Logger
 
 object main extends SimpleSwingApplication {
   Logger.level = Config.logLevel
-  val fieldLength = 1024
+  val fieldLength = 512
   val field = Field(fieldLength)
   val bgColor = new Color(255, 255, 255)
   val ui = new AbstractUI
