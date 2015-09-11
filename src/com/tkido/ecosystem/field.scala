@@ -11,9 +11,9 @@ import com.tkido.tools.Logger
 class Field(val length:Int) {
   var count = 0
   var lives = MutableList[Life]()
-  Range(0, 1000).map(_ => lives += new Plant(this, Vector(Random.nextDouble * length, Random.nextDouble * length), Vector(0.0, 0.0)))
-  Range(0, 100).map(_ => lives += new Grazer(this, Vector(Random.nextDouble * length, Random.nextDouble * length)))
-  Range(0, 20).map(_ => lives += new Predator(this, Vector(Random.nextDouble * length, Random.nextDouble * length)))
+  Range(0, 1000).map(_ => lives += new Plant(this, nextVector, Vector(0.0, 0.0)))
+  Range(0, 100).map(_ => lives += new Grazer(this, nextVector))
+  Range(0, 20).map(_ => lives += new Predator(this, nextVector))
   val newComers = MutableList[Life]()
 
   def addLife(life:Life){
@@ -43,7 +43,10 @@ class Field(val length:Int) {
       case x if (x >= length) => - 0.0001
       case _ => x
     }
-  }  
+  }
+  
+  def nextVector() :Vector =
+    Vector(Random.nextDouble * length, Random.nextDouble * length)
   
   
 }

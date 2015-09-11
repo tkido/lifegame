@@ -4,11 +4,9 @@ import scala.swing._
 import scala.swing.event._
 import scala.swing.event.Key._
 
-
 import java.awt.Cursor
 import java.awt.Color
-import java.awt.{Dimension, Graphics2D, Graphics, Image}
-import java.awt.geom.Ellipse2D
+import java.awt.{Dimension, Graphics2D, Image}
 
 import com.tkido.collision.Config
 import com.tkido.swing.ImageLoader
