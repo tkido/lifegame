@@ -5,11 +5,14 @@ import scala.collection.mutable.MutableList
 import scala.util.Random
 
 import com.tkido.math.Vector
+import com.tkido.math.powInt
 import com.tkido.collision.{Manager, Mover}
 import com.tkido.tools.Logger
 
 class Field(val length:Int) {
-  val cm = new Manager()
+  val level = 5
+  val cm = Manager(level)
+  val zoom = length / (powInt(2, level))
   var count = 0
   var lives = MutableList[Life]()
   val newComers = MutableList[Life]()
@@ -36,7 +39,7 @@ class Field(val length:Int) {
     lives = lives.filter(_.energy > 0.0)
     newComers.clear
     count += 1
-    Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
+    //Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
   }
   
   def nextVector() :Vector =
@@ -51,10 +54,10 @@ class Field(val length:Int) {
       }
     }
     cm.updateCell(life,
-                  sanitize(x1) / 32,
-                  sanitize(y1) / 32,
-                  sanitize(x2) / 32,
-                  sanitize(y2) / 32)
+                  sanitize(x1) / zoom,
+                  sanitize(y1) / zoom,
+                  sanitize(x2) / zoom,
+                  sanitize(y2) / zoom)
   }
 }
 object Field {
