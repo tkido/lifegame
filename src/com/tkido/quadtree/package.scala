@@ -6,8 +6,8 @@ package object quadtree {
   
   import com.tkido.tools.Logger
   
-  val cells = Array.fill(1365)(Set[Mover]())
-  val stack = new Stack[Mover]()
+  private val cells = Array.fill(1365)(Set[Mover]())
+  private val stack = new Stack[Mover]()
   
   trait Mover{
     var cellNum = -1
@@ -30,7 +30,10 @@ package object quadtree {
     }
   }
   
-  def checkCell(i:Int){
+  def check{
+    checkCell(0)
+  }
+  private def checkCell(i:Int){
     val list = cells(i).toList
     for(mover <- list){
       for(other <- list)
@@ -52,7 +55,7 @@ package object quadtree {
     }
   }
   
-  def getMortonNumber(x:Int, y:Int):Int = {
+  private def getMortonNumber(x:Int, y:Int):Int = {
     def separate(arg:Int) :Int = {
       var n = arg
       n = (n|(n<<8)) & 0x00ff00ff
@@ -63,11 +66,11 @@ package object quadtree {
     }
     return separate(x) | separate(y)<<1
   }
-  def getMortonNumber(x:Double, y:Double) :Int = {
+  private def getMortonNumber(x:Double, y:Double) :Int = {
     getMortonNumber(x.toInt, y.toInt)
   }
   
-  def getCellNumber(upperLeft:Int, lowerRight:Int) :Int = {
+  private def getCellNumber(upperLeft:Int, lowerRight:Int) :Int = {
     upperLeft ^ lowerRight match{
       case n if (n>>8 & 0x3) != 0 => 0                        //L0
       case n if (n>>6 & 0x3) != 0 => (lowerRight >>  8) + 1   //L1

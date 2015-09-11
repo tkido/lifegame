@@ -146,7 +146,7 @@ object main extends SimpleSwingApplication {
     def space() {
       for(bullet <- bullets)
         bullet.update
-      quadtree.checkCell(0)
+      //quadtree.checkCell(0)
     }
   }
     

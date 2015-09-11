@@ -28,7 +28,7 @@ class Field(val length:Int) {
   def update(){
     for(life <- lives)
       life.update
-    quadtree.checkCell(0)
+    quadtree.check
     lives ++= newComers
     lives.filter(_.energy <= 0.0).map(quadtree.remove(_))
     lives = lives.filter(_.energy > 0.0)
