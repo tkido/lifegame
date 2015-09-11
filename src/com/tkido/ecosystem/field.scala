@@ -12,10 +12,11 @@ class Field(val length:Int) {
   val cm = new Manager()
   var count = 0
   var lives = MutableList[Life]()
+  val newComers = MutableList[Life]()
+  
   Range(0, 1000).map(_ => lives += new Plant(this, nextVector, Vector(0.0, 0.0)))
   Range(0, 100).map(_ => lives += new Grazer(this, nextVector))
   Range(0, 20).map(_ => lives += new Predator(this, nextVector))
-  val newComers = MutableList[Life]()
 
   def addLife(life:Life){
     newComers += life
