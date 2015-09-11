@@ -11,24 +11,23 @@ package object quadtree {
   
   trait Mover{
     var cellNum = -1
-    
-    def updateCell(x1:Double, y1:Double, x2:Double, y2:Double){
-      val upperLeft = getMortonNumber(x1 / 32, y1 / 32)
-      val lowerRight = getMortonNumber(x2 / 32, y2 / 32)
-      val newCellNum = getCellNumber(upperLeft, lowerRight)
-      if(cellNum != newCellNum){
-        if(-1 != cellNum)
-          cells(cellNum).remove(this)
-        cells(newCellNum).add(this)
-        cellNum = newCellNum
-      }
-    }
-    
-    def remove(){
-      cells(this.cellNum).remove(this)
-    }
-      
     def check(other:Mover)
+  }
+  
+  def remove(mover:Mover){
+    cells(mover.cellNum).remove(mover)
+  }
+  
+  def updateCell(mover:Mover, x1:Double, y1:Double, x2:Double, y2:Double){
+    val upperLeft = getMortonNumber(x1, y1)
+    val lowerRight = getMortonNumber(x2, y2)
+    val newCellNum = getCellNumber(upperLeft, lowerRight)
+    if(mover.cellNum != newCellNum){
+      if(-1 != mover.cellNum)
+        cells(mover.cellNum).remove(mover)
+      cells(newCellNum).add(mover)
+      mover.cellNum = newCellNum
+    }
   }
   
   def checkCell(i:Int){

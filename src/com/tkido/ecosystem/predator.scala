@@ -70,10 +70,10 @@ class Predator(val field:Field, var v:Vector) extends Life{
   }
   
   override def updateCell(){
-    val x1 = field.sanitize(v.x - radius - Predator.range)
-    val y1 = field.sanitize(v.y - radius - Predator.range)
-    val x2 = field.sanitize(v.x + radius + Predator.range)
-    val y2 = field.sanitize(v.y + radius + Predator.range)
-    super.updateCell(x1, y1, x2, y2)
+    field.move(this,
+               v.x - radius - Predator.range,
+               v.y - radius - Predator.range,
+               v.x + radius + Predator.range,
+               v.y + radius + Predator.range)
   }
 }

@@ -55,11 +55,11 @@ abstract class Life() extends quadtree.Mover{
   }
   
   def updateCell(){
-    val x1 = field.sanitize(v.x - radius)
-    val y1 = field.sanitize(v.y - radius)
-    val x2 = field.sanitize(v.x + radius)
-    val y2 = field.sanitize(v.y + radius)
-    super.updateCell(x1, y1, x2, y2)
+    field.move(this,
+               v.x - radius,
+               v.y - radius,
+               v.x + radius,
+               v.y + radius)
   }
   
   def check(other:quadtree.Mover)

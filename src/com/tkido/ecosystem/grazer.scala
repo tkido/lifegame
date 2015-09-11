@@ -91,10 +91,10 @@ class Grazer(val field:Field, var v:Vector) extends Life{
   }
   
   override def updateCell(){
-    val x1 = field.sanitize(v.x - radius - 10)
-    val y1 = field.sanitize(v.y - radius - 10)
-    val x2 = field.sanitize(v.x + radius + 10)
-    val y2 = field.sanitize(v.y + radius + 10)
-    super.updateCell(x1, y1, x2, y2)
+    field.move(this,
+               v.x - radius - Grazer.range,
+               v.y - radius - Grazer.range,
+               v.x + radius + Grazer.range,
+               v.y + radius + Grazer.range)
   }
 }

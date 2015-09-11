@@ -30,14 +30,14 @@ class Field(val length:Int) {
       life.update
     quadtree.checkCell(0)
     lives ++= newComers
-    lives.filter(_.energy <= 0.0).map(_.remove)
+    lives.filter(_.energy <= 0.0).map(quadtree.remove(_))
     lives = lives.filter(_.energy > 0.0)
     newComers.clear
     count += 1
     Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
   }
   
-  def sanitize(x:Double) :Double = {
+  private def sanitize(x:Double) :Double = {
     x match {
       case x if (x < 0.0) => 0.0
       case x if (x >= length) => - 0.0001
@@ -48,7 +48,13 @@ class Field(val length:Int) {
   def nextVector() :Vector =
     Vector(Random.nextDouble * length, Random.nextDouble * length)
   
-  
+  def move(life:Life, x1:Double, y1:Double, x2:Double, y2:Double){
+    quadtree.updateCell(life,
+                        sanitize(x1) / 32,
+                        sanitize(y1) / 32,
+                        sanitize(x2) / 32,
+                        sanitize(y2) / 32)
+  }
 }
 object Field {
   def apply(length:Int) = new Field(length)
