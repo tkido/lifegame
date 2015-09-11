@@ -37,18 +37,17 @@ class Field(val length:Int) {
     Logger.debug("Count %s :Polulation= %s".format(count, lives.size))
   }
   
-  private def sanitize(x:Double) :Double = {
-    x match {
-      case x if (x < 0.0) => 0.0
-      case x if (x >= length) => - 0.0001
-      case _ => x
-    }
-  }
-  
   def nextVector() :Vector =
     Vector(Random.nextDouble * length, Random.nextDouble * length)
   
   def move(life:Life, x1:Double, y1:Double, x2:Double, y2:Double){
+    def sanitize(x:Double) :Double = {
+      x match {
+        case x if (x < 0.0) => 0.0
+        case x if (x >= length) => length - 0.0001
+        case _ => x
+      }
+    }
     quadtree.updateCell(life,
                         sanitize(x1) / 32,
                         sanitize(y1) / 32,

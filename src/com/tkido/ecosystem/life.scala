@@ -1,6 +1,6 @@
 package com.tkido.ecosystem
 
-import java.awt.{Dimension, Graphics2D, Graphics, Image, Point, Rectangle}
+import java.awt.{Dimension, Graphics2D, Image}
 import java.awt.Color
 import java.awt.geom.Ellipse2D
 
