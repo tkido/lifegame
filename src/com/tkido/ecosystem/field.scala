@@ -5,10 +5,11 @@ import scala.collection.mutable.MutableList
 import scala.util.Random
 
 import com.tkido.math.Vector
-import com.tkido.quadtree
+import com.tkido.collision.{Manager, Mover}
 import com.tkido.tools.Logger
 
 class Field(val length:Int) {
+  val cm = new Manager()
   var count = 0
   var lives = MutableList[Life]()
   Range(0, 1000).map(_ => lives += new Plant(this, nextVector, Vector(0.0, 0.0)))
@@ -28,9 +29,9 @@ class Field(val length:Int) {
   def update(){
     for(life <- lives)
       life.update
-    quadtree.check
+    cm.check
     lives ++= newComers
-    lives.filter(_.energy <= 0.0).map(quadtree.remove(_))
+    lives.filter(_.energy <= 0.0).map(cm.remove(_))
     lives = lives.filter(_.energy > 0.0)
     newComers.clear
     count += 1
@@ -48,11 +49,11 @@ class Field(val length:Int) {
         case _ => x
       }
     }
-    quadtree.updateCell(life,
-                        sanitize(x1) / 32,
-                        sanitize(y1) / 32,
-                        sanitize(x2) / 32,
-                        sanitize(y2) / 32)
+    cm.updateCell(life,
+                  sanitize(x1) / 32,
+                  sanitize(y1) / 32,
+                  sanitize(x2) / 32,
+                  sanitize(y2) / 32)
   }
 }
 object Field {

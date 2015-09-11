@@ -8,10 +8,9 @@ import java.awt.Cursor
 import java.awt.Color
 import java.awt.{Dimension, Graphics2D, Image}
 
-import com.tkido.collision.Config
+import com.tkido.lifegame.Config
 import com.tkido.swing.ImageLoader
 import com.tkido.tools.Logger
-
 
 object main extends SimpleSwingApplication {
   Logger.level = Config.logLevel

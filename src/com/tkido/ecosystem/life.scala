@@ -4,10 +4,10 @@ import java.awt.{Dimension, Graphics2D, Image}
 import java.awt.Color
 import java.awt.geom.Ellipse2D
 
-import com.tkido.quadtree
+import com.tkido.collision.Mover
 import com.tkido.math.Vector
 
-abstract class Life() extends quadtree.Mover{
+abstract class Life() extends Mover{
   val field:Field
   var v:Vector
   var dv:Vector
@@ -62,6 +62,6 @@ abstract class Life() extends quadtree.Mover{
                v.y + radius)
   }
   
-  def check(other:quadtree.Mover)
+  def check(other:Mover)
   
 }

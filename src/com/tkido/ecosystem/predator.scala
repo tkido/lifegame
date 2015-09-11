@@ -3,7 +3,7 @@ package com.tkido.ecosystem
 import java.awt.Color
 import scala.util.Random
 import com.tkido.math.Vector
-import com.tkido.quadtree.Mover
+import com.tkido.collision.Mover
 
 object Predator {
   val speed = 2.0
