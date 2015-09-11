@@ -11,7 +11,7 @@ object Predator {
   val color:Color = new Color(255, 0, 0)
 }
 
-class Predator(var v:Vector) extends Life{
+class Predator(val field:Field, var v:Vector) extends Life{
   var radius:Double = 1.0
   var energy:Double = 1.0
   var dv = Vector(0.0, 0.0)
@@ -62,7 +62,7 @@ class Predator(var v:Vector) extends Life{
     
     if(energy >= 11.0){
       energy = 10.0
-      Range(0, 1).map(_ => main.addLife(new Predator(v)))
+      Range(0, 1).map(_ => field.addLife(new Predator(field, v)))
     }
     
     energy *= 0.999
@@ -70,10 +70,10 @@ class Predator(var v:Vector) extends Life{
   }
   
   override def updateCell(){
-    val x1 = sanitize(v.x - radius - Predator.range)
-    val y1 = sanitize(v.y - radius - Predator.range)
-    val x2 = sanitize(v.x + radius + Predator.range)
-    val y2 = sanitize(v.y + radius + Predator.range)
+    val x1 = field.sanitize(v.x - radius - Predator.range)
+    val y1 = field.sanitize(v.y - radius - Predator.range)
+    val x2 = field.sanitize(v.x + radius + Predator.range)
+    val y2 = field.sanitize(v.y + radius + Predator.range)
     super.updateCell(x1, y1, x2, y2)
   }
 }

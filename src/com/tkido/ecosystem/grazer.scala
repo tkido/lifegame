@@ -12,7 +12,7 @@ object Grazer {
 }
 
 
-class Grazer(var v:Vector) extends Life{
+class Grazer(val field:Field, var v:Vector) extends Life{
   var radius:Double = 1.0
   var energy:Double = 1.0
   var dv = Vector(0.0, 0.0)
@@ -83,7 +83,7 @@ class Grazer(var v:Vector) extends Life{
     
     if(energy >= 12.0){
       energy = 10.0
-      Range(0, 2).map(_ => main.addLife(new Grazer(v)))
+      Range(0, 2).map(_ => field.addLife(new Grazer(field, v)))
     }
     
     energy *= 0.995
@@ -91,10 +91,10 @@ class Grazer(var v:Vector) extends Life{
   }
   
   override def updateCell(){
-    val x1 = sanitize(v.x - radius - 10)
-    val y1 = sanitize(v.y - radius - 10)
-    val x2 = sanitize(v.x + radius + 10)
-    val y2 = sanitize(v.y + radius + 10)
+    val x1 = field.sanitize(v.x - radius - 10)
+    val y1 = field.sanitize(v.y - radius - 10)
+    val x2 = field.sanitize(v.x + radius + 10)
+    val y2 = field.sanitize(v.y + radius + 10)
     super.updateCell(x1, y1, x2, y2)
   }
 }

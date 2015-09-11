@@ -17,9 +17,8 @@ package object math {
     }
   }
   
-  def combination(m:Int, n:Int) :BigInt = {
+  def combination(m:Int, n:Int) :BigInt =
     factorial(m) / (factorial(n) * factorial(m - n))
-  }
   
   def nextVector() :Vector = {
     val rad = Random.nextDouble * 2 * Pi

@@ -8,20 +8,13 @@ import com.tkido.quadtree
 import com.tkido.math.Vector
 
 abstract class Life() extends quadtree.Mover{
+  val field:Field
   var v:Vector
   var dv:Vector
   var radius:Double
   var energy:Double
   
   val color:Color
-  
-  protected def sanitize(x:Double) :Double = {
-    x match {
-      case x if x < 0.0 => 0.0
-      case x if x >= fieldLength => - 0.0001
-      case _ => x
-    }
-  }
   
   def paint(g: Graphics2D) {
     g.setColor(color)
@@ -41,8 +34,8 @@ abstract class Life() extends quadtree.Mover{
     if(x - radius < 0.0){
       x = 2 * radius - x
       dx *= -1
-    }else if(x + radius >= fieldLength){
-      x = 2 * fieldLength -2 * radius - x
+    }else if(x + radius >= field.length){
+      x = 2 * field.length -2 * radius - x
       dx *= -1
     }
     
@@ -50,8 +43,8 @@ abstract class Life() extends quadtree.Mover{
     if(y - radius < 0.0){
       y = 2 * radius - y
       dy *= -1
-    }else if(y + radius >= fieldLength){
-      y = 2 * fieldLength -2 * radius - y
+    }else if(y + radius >= field.length){
+      y = 2 * field.length -2 * radius - y
       dy *= -1
     }
     
@@ -62,10 +55,10 @@ abstract class Life() extends quadtree.Mover{
   }
   
   def updateCell(){
-    val x1 = sanitize(v.x - radius)
-    val y1 = sanitize(v.y - radius)
-    val x2 = sanitize(v.x + radius)
-    val y2 = sanitize(v.y + radius)
+    val x1 = field.sanitize(v.x - radius)
+    val y1 = field.sanitize(v.y - radius)
+    val x2 = field.sanitize(v.x + radius)
+    val y2 = field.sanitize(v.y + radius)
     super.updateCell(x1, y1, x2, y2)
   }
   
